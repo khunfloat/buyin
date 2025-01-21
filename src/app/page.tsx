@@ -1,18 +1,9 @@
 "use client";
 
-import Title from "@/components/Title";
+import ImcLogo from "#/img/imclogo.svg";
+import { Player, Transaction } from "@/interfaces/models";
+import Image from "next/image";
 import { useEffect, useState } from "react";
-
-interface Player {
-  name: string;
-  balance: number;
-}
-
-interface Transaction {
-  from: string;
-  to: string;
-  amount: number;
-}
 
 export default function Home() {
   const [players, setPlayers] = useState<Player[]>([]);
@@ -42,8 +33,21 @@ export default function Home() {
       .map((name) => name.trim());
     const balance = parseFloat(formData.get("balance") as string);
 
-    const newPlayers = names.map((name) => ({ name, balance }));
-    setPlayers([...players, ...newPlayers]);
+    const updatedPlayers = [...players];
+
+    names.forEach((name) => {
+      const existingPlayerIndex = updatedPlayers.findIndex(
+        (player) => player.name === name
+      );
+
+      if (existingPlayerIndex !== -1) {
+        updatedPlayers[existingPlayerIndex].balance += balance;
+      } else {
+        updatedPlayers.push({ name, balance });
+      }
+    });
+
+    setPlayers(updatedPlayers);
   };
 
   const handleTransfer = (formData: FormData) => {
@@ -110,7 +114,16 @@ export default function Home() {
 
   return (
     <div className="text-white pt-10 px-3 pb-10">
-      <Title />
+      <div className="flex justify-center pb-2">
+        <Image
+          src={ImcLogo}
+          width={80}
+          height={80}
+          alt="Picture of the author"
+        />
+      </div>
+      <div className="text-center text-3xl font-bold">Intania Music Casino</div>
+      <div className="text-center pb-5 text-lg">BuyIn Manager</div>
 
       <div className="flex justify-center">
         <button
